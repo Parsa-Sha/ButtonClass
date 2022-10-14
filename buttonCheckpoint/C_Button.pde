@@ -26,6 +26,34 @@ class Button {
   PImage img;
   int hoverWeight, hoverNotWeight;
   int buttonType;
+  String label;
+
+  Button(PImage Image, float X, float Y, float W, float H, int strokeHoverWeight, int strokeNotHoverWeight) {
+    x = X;
+    y = Y;
+    w = W;
+    h = H;  
+    hoverWeight = strokeHoverWeight;
+    hoverNotWeight = strokeNotHoverWeight;
+    
+    img = Image;
+  }
+
+  Button(String buttonLabel, float X, float Y, float W, float H, color cStrokeHover, color cStrokeNotHover, color cFillPressed, color cFillNotPressed, int strokeHoverWeight, int strokeNotHoverWeight) {
+    x = X;
+    y = Y;
+    w = W;
+    h = H;
+    cHover = cStrokeHover;
+    cPressed = cFillPressed;
+    hoverWeight = strokeHoverWeight;
+    cNotHover = cStrokeNotHover;
+    cNotPressed = cFillNotPressed;
+    hoverNotWeight = strokeNotHoverWeight;
+
+    label = buttonLabel;
+  }
+
 
   // Type 0
   Button(int type, float X, float Y, float W, float H) {
@@ -69,23 +97,11 @@ class Button {
   }
 
   void show() {
-    if (this.hover()) {
-      stroke(cHover);
-      strokeWeight(hoverWeight);
-    } else {
-      stroke(cNotHover);
-      strokeWeight(hoverNotWeight);
-    }
-
-    if (this.press()) fill(cPressed);
-    else fill(cNotPressed);
-
-    if (buttonType == 3) {
-      imageMode(CENTER);
-      image(img, x, y);
-    }
-    rectMode(CENTER);
-    rect(x, y, w, h);
+    changeStroke();
+    changeFill();
+    drawRect();
+    drawImg();
+    drawTxt();
   }
 
   boolean hover() {
@@ -93,7 +109,50 @@ class Button {
   }
 
   boolean press() {
-    if (this.hover() && mousePressed) return true;
+    if (hover() && mousePressed) return true;
     else return false;
+  }
+
+  void changeStroke() {
+    if (this.hover()) {
+      stroke(cHover);
+      strokeWeight(hoverWeight);
+    } else {
+      stroke(cNotHover);
+      strokeWeight(hoverNotWeight);
+    }
+  }
+
+  void changeFill() {
+    if (this.press()) fill(cPressed);
+    else fill(cNotPressed);
+  }
+
+  void drawRect() {
+    if (img == null) {
+      rectMode(CENTER);
+      rect(x, y, w, h);
+    }
+  }
+
+  void drawImg() {
+    if (buttonType == 3) {
+      imageMode(CENTER);
+      image(img, x, y);
+    }
+  }
+
+  void drawTxt() {
+    if (label != null) {
+      textAlign(CENTER, CENTER);
+      txtFillCalculate();
+      textSize(20);
+      text(label, x, y);
+    }
+  }
+
+  void txtFillCalculate() {
+    if (this.press()) fill(color( abs(red(cPressed)-255), abs(green(cPressed)-255), abs(blue(cPressed)-255) ));
+    else fill(color( abs(red(cNotPressed)-255), abs(green(cNotPressed)-255), abs(blue(cNotPressed)-255) ));
   }
 }
